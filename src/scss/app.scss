@@ -1,5 +1,8 @@
 body {
+  background: grey;
   div {
-    background: red;
+    &:hover{
+      background: purple;
+    }
   }
 }
