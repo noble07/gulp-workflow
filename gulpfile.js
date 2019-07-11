@@ -139,6 +139,10 @@
 const gulp = require('gulp');
 const sass = require('gulp-sass');
 const browsersync = require('browser-sync').create();
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
+const postcss = require('gulp-postcss');
+const rename = require("gulp-rename");
 
 gulp.compiler = require('node-sass');
 
@@ -154,6 +158,7 @@ function browserSync(done){
 function style() {
   return gulp.src('src/scss/app.scss')
   .pipe(sass())
+  .pipe(postcss([autoprefixer(), cssnano()]))
   .pipe(gulp.dest('dist/css'))
   .pipe(browsersync.stream());
 };
