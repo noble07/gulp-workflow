@@ -143,6 +143,9 @@ const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const postcss = require('gulp-postcss');
 const rename = require("gulp-rename");
+const webpack = require("webpack");
+const webpackconfig = require("./webpack.config");
+const webpackstream = require("webpack-stream");
 
 gulp.compiler = require('node-sass');
 
@@ -155,7 +158,7 @@ function browserSync(done){
   done();
 }
 
-function style() {
+function style(){
   return gulp.src('src/scss/app.scss')
   .pipe(sass())
   .pipe(postcss([autoprefixer(), cssnano()]))
@@ -163,8 +166,19 @@ function style() {
   .pipe(browsersync.stream());
 };
 
+function scriptsBuild(){
+  return (
+    gulp
+      .src(['./src/js/main.js'])
+      .pipe(webpackstream(webpackconfig, webpack))
+      .pipe(gulp.dest('./dist/js'))
+      .pipe(browsersync.stream())
+  );
+}
+
 function watchFiles(){
   gulp.watch('./src/scss/**/*.scss', style);
+  gulp.watch('./src/js/**/*', scriptsBuild);
   gulp.watch('./*.html').on('change', browsersync.reload);
   gulp.watch('./src/js/**/*.js').on('change', browsersync.reload);
 }
@@ -173,3 +187,4 @@ const watch = gulp.parallel(watchFiles, browserSync)
 
 exports.style = style;
 exports.watch = watch;
+exports.scripts = scriptsBuild;
