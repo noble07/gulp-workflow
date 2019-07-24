@@ -142,7 +142,6 @@ const browsersync = require('browser-sync').create();
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const postcss = require('gulp-postcss');
-const rename = require("gulp-rename");
 const webpack = require("webpack");
 const webpackconfig = require("./webpack.config");
 const webpackstream = require("webpack-stream");
@@ -159,8 +158,11 @@ function browserSync(done){
 }
 
 function style(){
-  return gulp.src('src/scss/app.scss')
-  .pipe(sass())
+  return gulp.src([
+    'node_modules/bootstrap/scss/bootstrap.scss',
+    'src/scss/app.scss'
+  ])
+  .pipe(sass({outputStyle:'compressed'}))
   .pipe(postcss([autoprefixer(), cssnano()]))
   .pipe(gulp.dest('dist/css'))
   .pipe(browsersync.stream());
@@ -169,7 +171,13 @@ function style(){
 function scriptsBuild(){
   return (
     gulp
-      .src(['./src/js/main.js'])
+      .src([
+        'node_modules/bootstrap/dist/js/bootstrap.min.js',
+        'node_modules/jquery/dist/jquery.min.js',
+        'node_modules/popper.js/dist/umd/popper.min.js',
+        'node_modules/mustache/mustache.min.js',
+        './src/js/main.js'
+      ])
       .pipe(webpackstream(webpackconfig, webpack))
       .pipe(gulp.dest('./dist/js'))
       .pipe(browsersync.stream())
